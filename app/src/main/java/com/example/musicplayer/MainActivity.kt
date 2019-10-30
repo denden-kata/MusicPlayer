@@ -18,8 +18,12 @@ class MainActivity : AppCompatActivity() {
         val remainingTimeLabel: TextView = findViewById(R.id.remainingTimeLabel)
         val volumeBar: SeekBar
         val positionBar: SeekBar
-        val mp: MediaPlayer
+        val mp: MediaPlayer = MediaPlayer.create(this, R.raw.test01)
 
 
+        // Media Player の初期化
+        mp.isLooping
+        mp.seekTo(0)
+        mp.setVolume(0.5f, 0.5f)
     }
 }
