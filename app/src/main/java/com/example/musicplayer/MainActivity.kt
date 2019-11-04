@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         mp = MediaPlayer.create(this, R.raw.test01)
         playButton = findViewById(R.id.playBtn)
         elapsedTimeLabel = findViewById(R.id.elapsedTimeLabel)
@@ -33,10 +32,32 @@ class MainActivity : AppCompatActivity() {
         mp.isLooping
         mp.seekTo(0)
         mp.setVolume(0.5f, 0.5f)
+
+        // 音量調節
+        volumeBar = findViewById(R.id.volumeBar)
+        volumeBar.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                // つまみが動かされたときに呼ばれる
+                override fun onProgressChanged(
+                    seekBar: SeekBar, volumePosition: Int, isChangeVolume: Boolean
+                ) {
+                    val volumeLevel = volumePosition / 100f
+                    mp.setVolume(volumeLevel, volumeLevel)
+                }
+
+                // つまみがタッチされたときに呼ばれる
+                override fun onStartTrackingTouch(seekBar: SeekBar) {
+                }
+
+                // つまみを離したときに呼ばれる
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+                }
+            }
+        )
     }
 
-    public fun playBtnClick(view: View){
-        if(!mp.isPlaying) {
+    public fun playBtnClick(view: View) {
+        if (!mp.isPlaying) {
             // 停止中なら再生する
             mp.start()
             playBtn.setBackgroundResource(R.drawable.stop)
