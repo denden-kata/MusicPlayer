@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var volumeBar: SeekBar
     private lateinit var positionBar: SeekBar
+    private var totalTime: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,19 +33,21 @@ class MainActivity : AppCompatActivity() {
         mp.isLooping
         mp.seekTo(0)
         mp.setVolume(0.5f, 0.5f)
+        // 楽曲ファイルの長さをミリ秒で取得
+        totalTime = mp.duration
 
-        // 音量調節
-        volumeBar = findViewById(R.id.volumeBar)
-        volumeBar.setOnSeekBarChangeListener(
+        // 再生位置
+        positionBar = findViewById(R.id.positionBar)
+        positionBar.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
                 // つまみが動かされたときに呼ばれる
                 override fun onProgressChanged(
-                    seekBar: SeekBar, volumePosition: Int, isChangeVolume: Boolean
-                ) {
-                    val volumeLevel = volumePosition / 100f
-                    mp.setVolume(volumeLevel, volumeLevel)
+                    seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    if(fromUser) {
+                        mp.seekTo(progress)
+                        positionBar.progress = progress
+                    }
                 }
-
                 // つまみがタッチされたときに呼ばれる
                 override fun onStartTrackingTouch(seekBar: SeekBar) {
                 }
@@ -54,9 +57,33 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+
+
+
+        // 音量調節
+        volumeBar = findViewById(R.id.volumeBar)
+        volumeBar.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                // つまみが動かされたときに呼ばれる
+                override fun onProgressChanged(
+                    seekBar: SeekBar?, volumePosition: Int, isChangeVolume: Boolean
+                ) {
+                    val volumeLevel = volumePosition / 100f
+                    mp.setVolume(volumeLevel, volumeLevel)
+                }
+
+                // つまみがタッチされたときに呼ばれる
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                // つまみを離したときに呼ばれる
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            }
+        )
     }
 
-    public fun playBtnClick(view: View) {
+    fun playBtnClick(view: View) {
         if (!mp.isPlaying) {
             // 停止中なら再生する
             mp.start()
