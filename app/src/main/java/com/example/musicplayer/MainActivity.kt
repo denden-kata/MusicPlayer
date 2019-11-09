@@ -1,13 +1,22 @@
 package com.example.musicplayer
 
+import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.app.ComponentActivity
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -59,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         )
 
 
-
         // 音量調節
         volumeBar = findViewById(R.id.volumeBar)
         volumeBar.setOnSeekBarChangeListener(
@@ -81,7 +89,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+
+
+        // 各更新を別Threadで動作させる
+        Thread(Runnable {
+            kotlin.run {
+                lateinit var message:Message
+                message.what = mp.currentPosition
+                handler.sendMessage(message)
+                Thread.sleep(1000)
+            }
+        })
+
     }
+
+
+    private val handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
+        override fun handleMessage(msg: Message) {
+            val currentPosition = msg.what
+        }
+    }
+
 
     fun playBtnClick(view: View) {
         if (!mp.isPlaying) {
