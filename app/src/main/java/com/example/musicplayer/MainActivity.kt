@@ -108,6 +108,9 @@ class MainActivity : AppCompatActivity() {
     object : Handler() {
         override fun handleMessage(msg: Message) {
             val currentPosition = msg.what
+
+            // 再生位置を更新
+            positionBar.setProgress(currentPosition)
         }
     }
 
